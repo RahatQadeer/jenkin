@@ -15,24 +15,27 @@ pipeline {
     }
 
     stage('Build Docker Image') {
-      steps {
-        script {
-          bat 'docker build -t %IMAGE_NAME%:%BUILD_NUMBER% .'
-        }
-      }
+  steps {
+    script {
+      def tag = new Date().format('yyyyMMddHHmmss')   // unique timestamp tag
+      env.IMAGE_TAG = tag
+      bat "docker build -t %IMAGE_NAME%:%IMAGE_TAG% ."
     }
+  }
+}
 
-    stage('Push to Docker Hub') {
-      steps {
-        withCredentials([usernamePassword(credentialsId: "${DOCKER_CRED}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-          bat '''
-            echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
-            docker push %IMAGE_NAME%:%BUILD_NUMBER%
-            docker logout
-          '''
-        }
-      }
+stage('Push to Docker Hub') {
+  steps {
+    withCredentials([usernamePassword(credentialsId: "${DOCKER_CRED}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+      bat """
+        echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+        docker push %IMAGE_NAME%:%IMAGE_TAG%
+        docker logout
+      """
     }
+  }
+}
+
   }
 
   post {
