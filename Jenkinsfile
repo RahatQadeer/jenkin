@@ -39,15 +39,15 @@ pipeline {
       }
     }
 
-    stage('Deploy to EC2') {
-  steps {
-    bat """
-      echo Deploying to EC2...
-      ssh -o StrictHostKeyChecking=no -i "C:\\ProgramData\\Jenkins\\Jenkins-Rahat.pem" ubuntu@15.134.36.98 "sudo docker pull rahatqadeer/jenkin-demo:%IMAGE_TAG% && sudo docker stop myapp || true && sudo docker rm myapp || true && sudo docker run -d -p 80:80 --name myapp rahatqadeer/jenkin-demo:%IMAGE_TAG%"
-      echo Deployment Successful!
-    """
-  }
+ stage('Deploy to EC2') {
+    steps {
+        bat '''
+        echo Deploying to EC2...
+        ssh -o StrictHostKeyChecking=no -i "C:\\ProgramData\\Jenkins\\Jenkins-Rahat.pem" ubuntu@15.134.36.98 "sudo docker pull rahatqadeer/jenkin-demo:${BUILD_TIMESTAMP} && sudo docker stop myapp || true && sudo docker rm myapp || true && sudo docker run -d -p 80:80 --name myapp rahatqadeer/jenkin-demo:${BUILD_TIMESTAMP}"
+        '''
+    }
 }
+
 
   }
 
