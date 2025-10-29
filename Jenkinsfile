@@ -4,9 +4,9 @@ pipeline {
   environment {
     IMAGE_NAME = "rahatqadeer/jenkin-demo"
     DOCKER_CRED = "docker-hub-creds"
-    EC2_HOST = "54.153.180.154"          //  EC2 public IP
-    EC2_USER = "ubuntu"                  // default EC2 username for Ubuntu
-    EC2_KEY = "ec2-ssh-key"  // Jenkins credentials ID for  PEM key
+    EC2_HOST = "54.153.180.154"
+    EC2_USER = "ubuntu"
+    EC2_KEY = "ec2-ssh-key"
   }
 
   stages {
@@ -20,7 +20,7 @@ pipeline {
     stage('Build Docker Image') {
       steps {
         script {
-          def tag = new Date().format('yyyyMMddHHmmss')   // unique timestamp tag
+          def tag = new Date().format('yyyyMMddHHmmss')
           env.IMAGE_TAG = tag
           bat "docker build -t %IMAGE_NAME%:%IMAGE_TAG% ."
         }
@@ -45,7 +45,7 @@ pipeline {
           withCredentials([sshUserPrivateKey(credentialsId: "${EC2_KEY}", keyFileVariable: 'KEYFILE')]) {
             bat """
               echo Deploying to EC2...
-              plink -ssh -i "%KEYFILE%" %EC2_USER%@%EC2_HOST% "docker pull %IMAGE_NAME%:%IMAGE_TAG% && docker stop myapp || true && docker rm myapp || true && docker run -d -p 80:80 --name myapp %IMAGE_NAME%:%IMAGE_TAG%"
+              ssh -o StrictHostKeyChecking=no -i "%KEYFILE%" %EC2_USER%@%EC2_HOST% "docker pull %IMAGE_NAME%:%IMAGE_TAG% && docker stop myapp || true && docker rm myapp || true && docker run -d -p 80:80 --name myapp %IMAGE_NAME%:%IMAGE_TAG%"
               echo Deployment Successful!
             """
           }
@@ -56,7 +56,7 @@ pipeline {
 
   post {
     success {
-      echo "✅ Docker image built, pushed, and deployed successfully: ${IMAGE_NAME}:${IMAGE_TAG}"
+      echo "✅ Docker image built, pushed, and deployed successfully!"
     }
     failure {
       echo "❌ Build failed!"
