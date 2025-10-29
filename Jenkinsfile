@@ -4,9 +4,9 @@ pipeline {
   environment {
     IMAGE_NAME = "rahatqadeer/jenkin-demo"
     DOCKER_CRED = "docker-hub-creds"
-    EC2_HOST = "54.153.180.154"
+    EC2_HOST = "15.134.36.98"   //  working EC2 public IP
     EC2_USER = "ubuntu"
-    EC2_KEY = "ec2-ssh-key"
+    EC2_KEY = "ec2-ssh-key"     // Jenkins credential ID
   }
 
   stages {
@@ -42,10 +42,10 @@ pipeline {
     stage('Deploy to EC2') {
       steps {
         script {
-          withCredentials([sshUserPrivateKey(credentialsId: "${EC2_KEY}", keyFileVariable: 'KEYFILE')]) {
+          withCredentials([sshUserPrivateKey(credentialsId: "${EC2_KEY}", keyFileVariable: 'KEYFILE', usernameVariable: 'EC2_USER')]) {
             bat """
               echo Deploying to EC2...
-              ssh -o StrictHostKeyChecking=no -i "%KEYFILE%" %EC2_USER%@%EC2_HOST% "docker pull %IMAGE_NAME%:%IMAGE_TAG% && docker stop myapp || true && docker rm myapp || true && docker run -d -p 80:80 --name myapp %IMAGE_NAME%:%IMAGE_TAG%"
+              ssh -o StrictHostKeyChecking=no -i "%KEYFILE%" %EC2_USER%@%EC2_HOST% "sudo docker pull %IMAGE_NAME%:%IMAGE_TAG% && sudo docker stop myapp || true && sudo docker rm myapp || true && sudo docker run -d -p 80:80 --name myapp %IMAGE_NAME%:%IMAGE_TAG%"
               echo Deployment Successful!
             """
           }
@@ -56,10 +56,10 @@ pipeline {
 
   post {
     success {
-      echo "✅ Docker image built, pushed, and deployed successfully!"
+      echo "Docker image built, pushed, and deployed successfully!"
     }
     failure {
-      echo "❌ Build failed!"
+      echo " Build failed!"
     }
   }
 }
