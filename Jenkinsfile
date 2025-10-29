@@ -4,9 +4,9 @@ pipeline {
   environment {
     IMAGE_NAME = "rahatqadeer/jenkin-demo"
     DOCKER_CRED = "docker-hub-creds"
-    EC2_HOST = "54.153.180.154"          // your EC2 public IP
+    EC2_HOST = "54.153.180.154"          //  EC2 public IP
     EC2_USER = "ubuntu"                  // default EC2 username for Ubuntu
-    EC2_KEY = "dbfc8dae-57db-4b83-aa77-d57bfc8a8c15"  // Jenkins credentials ID for your PEM key
+    EC2_KEY = "ec2-ssh-key"  // Jenkins credentials ID for  PEM key
   }
 
   stages {
