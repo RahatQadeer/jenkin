@@ -41,17 +41,11 @@ pipeline {
 
     stage('Deploy to EC2') {
   steps {
-    script {
-      withCredentials([sshUserPrivateKey(credentialsId: "${EC2_KEY}", keyFileVariable: 'KEYFILE')]) {
-        bat """
-          echo Deploying to EC2...
-          icacls "%KEYFILE%" /inheritance:r
-          icacls "%KEYFILE%" /grant:r "%USERNAME%:R"
-          ssh -o StrictHostKeyChecking=no -i "%KEYFILE%" %EC2_USER%@%EC2_HOST% "sudo docker pull %IMAGE_NAME%:%IMAGE_TAG% && sudo docker stop myapp || true && sudo docker rm myapp || true && sudo docker run -d -p 80:80 --name myapp %IMAGE_NAME%:%IMAGE_TAG%"
-          echo Deployment Successful!
-        """
-      }
-    }
+    bat """
+      echo Deploying to EC2...
+      ssh -o StrictHostKeyChecking=no -i "C:\\ProgramData\\Jenkins\\Jenkins-Rahat.pem" ubuntu@15.134.36.98 "sudo docker pull rahatqadeer/jenkin-demo:%IMAGE_TAG% && sudo docker stop myapp || true && sudo docker rm myapp || true && sudo docker run -d -p 80:80 --name myapp rahatqadeer/jenkin-demo:%IMAGE_TAG%"
+      echo Deployment Successful!
+    """
   }
 }
 
